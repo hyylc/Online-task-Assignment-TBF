@@ -6,7 +6,6 @@ import math
 def HST(r):
     """
     param r: 新的节点\n
-    return: 以r为根结点的树\n
     """
     return [r]
 
@@ -40,7 +39,7 @@ def construct(tree, i):
     T = tree[0]
     r[i] = beta*pow(2,i)
     global c
-    print(r[i])
+    # print(r[i])
     for vertex_i in PI:
         if len(T) == 0:
             return
@@ -50,20 +49,22 @@ def construct(tree, i):
         for vertex_j in metrixs:
             if dis(vertex_i,vertex_j) <= r[i]:
                 temp.append(vertex_j)
+        # temp 和 T 的交集
         for vertex in temp:
             if vertex in T:
                 U.append(vertex)
+        # T - U
         for vertex in T:
             if vertex not in U:
                 new_T.append(vertex)
-        
+        # U 不为空，新建结点，递归构建树
         if len(U) != 0:
             HST_U = HST(U)
-            print('距离点', vertex_i, r[i], '的点有', U)
+            # print('距离点', vertex_i, r[i], '的点有', U)
             tree.append(HST_U)
             construct(HST_U, i-1)
             T = new_T
-            print('当前T为 ',T)
+            # print('当前T为 ',T)
 
     c = max(c, len(tree))    
         
@@ -77,7 +78,7 @@ def add_fake_nodes(HST_tree, level):
     if level < 0:
         return
     l = len(HST_tree)
-    print(c,l)
+    # print(c,l)
     for i in range(c-l):
         HST_tree.append([])
 
@@ -100,6 +101,30 @@ def print_tree(HST_tree, level):
     for i in range(len(HST_tree)-1):
         print_tree(HST_tree[i+1], level-1)
 
+def print_leaf(HST_tree, level):
+    if level == 0:
+        print(HST_tree)
+        return
+    for i in range(len(HST_tree)-1):
+        print_leaf(HST_tree[i+1], level-1)
+
+# 每两个结点之间的最近公共祖先所在层数
+def LCA_level(HST_tree, level, start, end):
+    if start == end:
+        LCA[start][end] = 0
+        return
+    for i in range(c-1):
+        for j in range(c-1):
+            if i != j:
+                for k in range(pow(c-1, level-1)):
+                    for l in range(pow(c-1, level-1)):
+                        LCA[start+i*pow(c-1, level-1)+k][start+j*pow(c-1, level-1)+l] = level
+    for i in range(c-1):
+        LCA_level(HST_tree[i+1], level-1, start+i*pow(c-1, level-1), start+(i+1)*pow(c-1, level-1)-1)
+
+def print_format(M):
+    for i in range(len(M)):
+        print(M[i])
 
 
 # 算法1
@@ -148,6 +173,17 @@ S = [[],[],[],[],[]]
 r = [0]*D
 # maximum number of branches in the tree
 c = 0
+
+
+
 # algorithm_1构造树
 HST_tree = algorithm_1(metrixs)
 print_tree(HST_tree, D)
+print_leaf(HST_tree, D)
+# 叶子结点数
+num_of_nodes = pow(c-1, D)
+print(num_of_nodes)
+# LCA[x][a]，任意两个结点的最近公共祖先所在层
+LCA = [[0 for i in range(num_of_nodes)] for i in range(num_of_nodes)]
+LCA_level(HST_tree, D, 0, num_of_nodes-1)
+print_format(LCA)
