@@ -211,7 +211,7 @@ def algorithm_3(leaf):
 
 # 算法4
 def algorithm_4():
-     
+    pass
 
 # 初始化点
 metrixs = [
